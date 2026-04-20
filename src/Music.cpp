@@ -1,0 +1,42 @@
+#include "Music.h"
+#include <iostream>
+
+Music::Music() {
+    music = nullptr; // Inicializa vazio
+}
+
+Music::Music(std::string file) {
+    music = nullptr;
+    Open(file);
+}
+
+void Music::Open(std::string file) {
+    // Carrega o arquivo de música
+    music = Mix_LoadMUS(file.c_str());
+    if (music == nullptr) {
+        std::cerr << "Erro ao carregar musica: " << SDL_GetError() << std::endl; //
+    }
+}
+
+void Music::Play(int times) {
+    if (music != nullptr) {
+        // Toca a música. O Mixer só toca uma por vez
+        Mix_PlayMusic(music, times);
+    }
+}
+
+void Music::Stop(int msToStop) {
+    // Para a música com efeito de fade-out
+    Mix_FadeOutMusic(msToStop);
+}
+
+bool Music::IsOpen() {
+    return music != nullptr;
+}
+
+Music::~Music() {
+    Stop(0); // Para imediatamente antes de liberar
+    if (music != nullptr) {
+        Mix_FreeMusic(music); // Desaloca da memória
+    }
+}
