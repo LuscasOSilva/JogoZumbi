@@ -4,12 +4,18 @@
 #include <iostream>
 
 Sprite::Sprite() {
-    texture = nullptr; // Inicializa como nulo
+    texture = nullptr;
+    frameCountW = 1;
+    frameCountH = 1;
+    currentFrame = 0;
 }
 
 Sprite::Sprite(std::string file) {
     texture = nullptr;
-    Open(file);        // Chama o Open diretamente
+    frameCountW = 1;
+    frameCountH = 1;
+    currentFrame = 0;
+    Open(file);
 }
 
 Sprite::~Sprite() {
@@ -46,8 +52,8 @@ void Sprite::SetClip(int x, int y, int w, int h) {
     clipRect.h = h;
 }
 
-int Sprite::GetWidth() { return width; }
-int Sprite::GetHeight() { return height; }
+int Sprite::GetWidth() { return (width / frameCountW); }
+int Sprite::GetHeight() { return (height / frameCountH); }
 bool Sprite::IsOpen() { return texture != nullptr; }
 
 void Sprite::Render(int x, int y) {
@@ -59,4 +65,25 @@ void Sprite::Render(int x, int y) {
 
     // Renderiza a parte selecionada (clipRect) na posição de destino (dstRect)
     SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
+}
+
+void Sprite::SetFrame(int frame) {
+    currentFrame = frame;
+    // Calcula a largura e altura de UM frame
+    int frameWidth = width / frameCountW;
+    int frameHeight = height / frameCountH;
+
+    // Lógica do PDF: divisão dá a linha, resto dá a coluna
+    int column = frame % frameCountW;
+    int row = frame / frameCountW;
+
+    SetClip(column * frameWidth, row * frameHeight, frameWidth, frameHeight);
+}
+
+void Sprite::SetFrameCount(int frameCountW, int frameCountH) {
+    this->frameCountW = frameCountW;
+    this->frameCountH = frameCountH;
+    // O PDF sugere que, ao mudar a contagem de frames, 
+    // devemos atualizar o clip para o frame 0
+    SetFrame(0);
 }

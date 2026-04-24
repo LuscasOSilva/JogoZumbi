@@ -1,22 +1,26 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include "Sprite.h"
+#include <vector>
+#include <memory>
+#include "GameObject.h"
 #include "Music.h"
 
 class State {
 public:
-    State();               // Construtor
-    ~State();              // Destrutor
-    bool QuitRequested();  // Retorna se o jogo deve fechar
-    void LoadAssets();     // Carrega imagens e sons
-    void Update(float dt); // Atualiza a lógica
-    void Render();         // Desenha no ecrã
+    State();
+    ~State();
+
+    bool QuitRequested();
+    void Update(float dt);
+    void Render();
+    void AddObject(GameObject* go); // Adiciona novos objetos [cite: 431]
 
 private:
-    Sprite bg;             // Imagem de fundo
-    Music music;           // Música de fundo
-    bool quitRequested;    // Flag de encerramento
+    Music music;
+    bool quitRequested;
+    // Vetor de ponteiros inteligentes para GameObjects [cite: 432]
+    std::vector<std::unique_ptr<GameObject>> objectArray; 
 };
 
 #endif

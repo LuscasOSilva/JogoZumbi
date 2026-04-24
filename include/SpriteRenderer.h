@@ -1,0 +1,22 @@
+#ifndef SPRITERENDERER_H
+#define SPRITERENDERER_H
+
+#include "Component.h"
+#include "Sprite.h"
+
+class SpriteRenderer : public Component {
+public:
+    SpriteRenderer(GameObject& associated);
+    SpriteRenderer(GameObject& associated, std::string file, int frameCountW = 1, int frameCountH = 1);
+
+    void Update(float dt) override; // Fica vazio
+    void Render() override;
+    
+    void Open(std::string file);
+    void SetFrame(int frame);
+
+private:
+    Sprite sprite;
+};
+
+#endif

@@ -16,12 +16,17 @@ public:
     int GetWidth();               // Retorna a largura
     int GetHeight();              // Retorna a altura
     bool IsOpen();                // Checa se a textura está alocada
+    void SetFrame(int frame);
+    void SetFrameCount(int frameCountW, int frameCountH);
 
 private:
     SDL_Texture* texture;         // A imagem em si
     int width;                    // Largura da imagem
     int height;                   // Altura da imagem
     SDL_Rect clipRect;            // Retângulo de clipagem (srcRect)
+    int frameCountW;
+    int frameCountH;
+    int currentFrame;
 };
 
 #endif
