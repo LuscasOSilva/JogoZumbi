@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "SpriteRenderer.h"
 #include "Animator.h"
+#include "Sound.h"
 #include <iostream>
 
 Zombie::Zombie(GameObject& associated) : Component(associated) {
@@ -19,6 +20,8 @@ Zombie::Zombie(GameObject& associated) : Component(associated) {
     associated.AddComponent(anim);
 
     anim->SetAnimation("walking"); // Começa andando1
+
+    associated.AddComponent(new Sound(associated, "audio/dead.wav"));
 }
 
 void Zombie::Damage(int damage) {
@@ -30,6 +33,13 @@ void Zombie::Damage(int damage) {
         Animator* anim = (Animator*)associated.GetComponent<Animator>();
         if (anim != nullptr) {
             anim->SetAnimation("dead");
+        }
+        
+        // 2. Toca o som de morte
+        // Buscamos o componente Sound associado a este GameObject
+        Sound* sound = (Sound*)associated.GetComponent<Sound>();
+        if (sound != nullptr) {
+            sound->Play(1); // Play(1) toca o som exatamente uma vez[cite: 2]
         }
     }
 }

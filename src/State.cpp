@@ -1,7 +1,9 @@
 #include "State.h"
 #include "GameObject.h"
-#include "SpriteRenderer.h" // Adicione esta linha
-#include "Zombie.h"         // Adicione esta linha
+#include "SpriteRenderer.h"
+#include "Zombie.h"
+#include "TileSet.h"
+#include "TileMap.h"
 #include "SDL2/SDL.h"
 
 State::State() : music("audio/BGM.wav") {
@@ -13,6 +15,17 @@ State::State() : music("audio/BGM.wav") {
     bgObj->box.x = 0;
     bgObj->box.y = 0;
     AddObject(bgObj);
+
+    GameObject* mapObj = new GameObject();
+    mapObj->box.x = 0;
+    mapObj->box.y = 0;
+
+    // Cria o TileSet e o TileMap (dimensões 64x64 conforme o PDF)
+    TileSet* ts = new TileSet(64, 64, "img/Tileset.png");
+    TileMap* tm = new TileMap(*mapObj, "map/map.txt", ts);
+
+    mapObj->AddComponent(tm);
+    AddObject(mapObj); // Adicionamos o mapa ANTES dos inimigos para ele ficar no fundo
 
     // 2. Criar o Zombie (O que vai mudar o visual!)
     GameObject* zombieObj = new GameObject();

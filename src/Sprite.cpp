@@ -1,5 +1,6 @@
 #include "Sprite.h"
 #include "Game.h"
+#include "Resources.h"
 #include "SDL2/SDL_image.h"
 #include <iostream>
 
@@ -20,18 +21,13 @@ Sprite::Sprite(std::string file) {
 
 Sprite::~Sprite() {
     if (texture != nullptr) {
-        SDL_DestroyTexture(texture); // Libera a memória da textura
+        //SDL_DestroyTexture(texture); // Libera a memória da textura
     }
 }
 
 void Sprite::Open(std::string file) {
-    // Se já houver uma textura, libere-a antes de carregar outra
-    if (texture != nullptr) {
-        SDL_DestroyTexture(texture);
-    }
-
     // Carrega a textura usando o renderer do Singleton Game
-    texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file.c_str());
+    texture = Resources::GetImage(file);
 
     if (texture == nullptr) {
         std::cerr << "Erro ao carregar textura: " << SDL_GetError() << std::endl;
@@ -42,7 +38,7 @@ void Sprite::Open(std::string file) {
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
 
     // Define o clip inicial com o tamanho total da imagem
-    SetClip(0, 0, width, height);
+    SetFrame(0);
 }
 
 void Sprite::SetClip(int x, int y, int w, int h) {

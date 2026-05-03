@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "State.h"
+#include "Resources.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
 #include <iostream>
@@ -119,4 +120,7 @@ void Game::Run() {
         // Limita o frame rate (aprox. 30 FPS)
         SDL_Delay(33);
     }
+    Resources::ClearImages();
+    Resources::ClearMusics();
+    Resources::ClearSounds();
 }
