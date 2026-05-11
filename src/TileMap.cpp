@@ -1,5 +1,6 @@
 #include "TileMap.h"
 #include "GameObject.h"
+#include "Camera.h"
 #include <fstream>
 #include <iostream>
 
@@ -45,8 +46,8 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY) {
                 // O tile deve respeitar a posição do mapObj (associated.box)
                 // Renderiza considerando a posição do GameObject (box)
                 tileSet->RenderTile(index, 
-                                    x * tw + associated.box.x - cameraX, 
-                                    y * th + associated.box.y - cameraY);
+                                    (x * tw) + associated.box.x - Camera::pos.x, 
+                                    (y * th) + associated.box.y - Camera::pos.y);
             }
         }
     }

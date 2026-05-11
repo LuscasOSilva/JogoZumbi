@@ -1,5 +1,6 @@
 #include "SpriteRenderer.h"
 #include "GameObject.h"
+#include "Camera.h"
 
 SpriteRenderer::SpriteRenderer(GameObject& associated) : Component(associated) {}
 
@@ -18,7 +19,7 @@ void SpriteRenderer::Open(std::string file) {
 
 void SpriteRenderer::Render() {
     // Renderiza na posição da box do GameObject
-    sprite.Render(associated.box.x, associated.box.y);
+    sprite.Render(associated.box.x - Camera::pos.x, associated.box.y - Camera::pos.y);
 }
 
 void SpriteRenderer::Update(float dt) {}

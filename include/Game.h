@@ -14,6 +14,8 @@ public:
     SDL_Renderer* GetRenderer();           // Getter do renderizador
     State& GetState();                     // Getter do estado atual
     static Game& GetInstance();            // Método de acesso Singleton
+    void CalculateDeltaTime();
+    float GetDeltaTime();
 
 private:
     // Construtor privado: recebe título e dimensões [cite: 
@@ -23,6 +25,9 @@ private:
     SDL_Window* window;                    // Janela da SDL
     SDL_Renderer* renderer;                // Renderizador da SDL
     State* state;                          // Estado atual do jogo
+
+    float dt;
+    int frameStart;
 };
 
 #endif

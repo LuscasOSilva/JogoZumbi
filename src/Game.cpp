@@ -3,6 +3,7 @@
 #include "Resources.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
+#include "InputManager.h"
 #include <iostream>
 
 // Inicialização da instância estática como nula
@@ -71,10 +72,13 @@ Game::Game(std::string title, int width, int height) {
     }
 
     // 6. Instancia o State
-    state = new State(); 
+    state = new State();
+    // Trabalho 4
+    frameStart = SDL_GetTicks();
+    dt = 0;
 } // Fim do construtor
 
-Game::~Game() {
+Game::~Game() { // Destrutor
     // Ordem inversa da inicializacao
     // 1. Limpa o estado (quando ele existir)
     if (state != nullptr) {
@@ -93,6 +97,17 @@ Game::~Game() {
     SDL_Quit();
 }
 
+void Game::CalculateDeltaTime() {
+    int currentFrameTime = SDL_GetTicks();
+    // dt é o tempo atual menos o tempo do frame passado, convertido para segundos
+    dt = (currentFrameTime - frameStart) / 1000.0f; // Converte ms para segundos
+    frameStart = currentFrameTime;
+}
+
+float Game::GetDeltaTime() {
+    return dt;
+}
+
 SDL_Renderer* Game::GetRenderer() {
     return renderer;
 }
@@ -104,22 +119,19 @@ State& Game::GetState() {
 
 void Game::Run() {
     // O Game Loop roda enquanto QuitRequested for false
-    while (state != nullptr && !state->QuitRequested()) {
-        // Atualiza lógica do estado
-        state->Update(0); 
+    while (!state->QuitRequested() && !InputManager::GetInstance().QuitRequested()) {
+        CalculateDeltaTime(); // 1. Calcula o tempo real deste frame
+        InputManager::GetInstance().Update(); // 2. Lê os inputs
 
-        // Limpa a tela antes de desenhar
-        SDL_RenderClear(renderer);
-        
-        // Renderiza o conteúdo do estado
+        state->Update(dt); // 3. Passa o dt real para a lógica do jogo
         state->Render();
-        
-        // Atualiza a tela com o que foi renderizado
-        SDL_RenderPresent(renderer);
 
-        // Limita o frame rate (aprox. 30 FPS)
-        SDL_Delay(33);
+        SDL_RenderPresent(renderer);
+        // O delay não é mais necessário para a lógica, 
+        // mas pode-se usar um pequeno delay para não consumir 100% da CPU.
     }
+
+    // Limpeza de recursos (Trabalho 3)
     Resources::ClearImages();
     Resources::ClearMusics();
     Resources::ClearSounds();

@@ -4,8 +4,17 @@
 #include "Zombie.h"
 #include "TileSet.h"
 #include "TileMap.h"
+#include "InputManager.h"
+#include "Camera.h"
+#include "CameraFollower.h"
 #include "SDL2/SDL.h"
 
+#ifndef ESCAPE_KEY
+    #define ESCAPE_KEY SDLK_ESCAPE
+    #define LEFT_MOUSE_BUTTON SDL_BUTTON_LEFT
+#endif
+
+// Construtor
 State::State() : music("audio/BGM.wav") {
     quitRequested = false;
 
@@ -14,6 +23,7 @@ State::State() : music("audio/BGM.wav") {
     bgObj->AddComponent(new SpriteRenderer(*bgObj, "img/Background.png"));
     bgObj->box.x = 0;
     bgObj->box.y = 0;
+    bgObj->AddComponent(new CameraFollower(*bgObj));
     AddObject(bgObj);
 
     GameObject* mapObj = new GameObject();
@@ -49,24 +59,33 @@ void State::AddObject(GameObject* go) {
 }
 
 void State::Update(float dt) {
-    // 1. Verifica fechamento da janela
-    if (SDL_QuitRequested()) {
+    InputManager& input = InputManager::GetInstance();
+
+    // 1. Atualiza a Câmera (faz ela processar o input ou seguir o foco)
+    Camera::Update(dt);
+
+    // 2. Verifica se o usuário apertou ESC para sair
+    if (input.KeyPress(ESCAPE_KEY) || input.QuitRequested()) {
         quitRequested = true;
     }
 
-    // 2. Atualiza todos os objetos
-    for (size_t i = 0; i < objectArray.size(); i++) {
+    // 3. Exemplo: Se clicar com o mouse, cria um Zombie na posição do mouse
+    // IMPORTANTE: O mouse dá a posição na TELA. 
+    // Para criar no MUNDO, somamos a posição da Câmera.
+    if (input.MousePress(LEFT_MOUSE_BUTTON)) {
+        GameObject* go = new GameObject();
+        go->box.x = input.GetMouseX() + Camera::pos.x;
+        go->box.y = input.GetMouseY() + Camera::pos.y;
+        go->AddComponent(new Zombie(*go));
+        AddObject(go);
+    }
+
+    // 4. Atualiza todos os GameObjects (já passando o dt real)
+    for (int i = 0; i < objectArray.size(); i++) {
         objectArray[i]->Update(dt);
     }
 
-    // 3. Remove objetos mortos 
-    for (size_t i = 0; i < objectArray.size(); i++) {
-        if (objectArray[i]->IsDead()) {
-            // Usa erase com o iterador de início + índice
-            objectArray.erase(objectArray.begin() + i);
-            i--; // Ajusta o índice após a remoção
-        }
-    }
+    // 5. Lógica de remoção de objetos mortos (opcional neste trabalho)
 }
 
 void State::Render() {

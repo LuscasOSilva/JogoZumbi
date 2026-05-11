@@ -8,13 +8,13 @@ Animator::Animator(GameObject& associated) : Component(associated) {
 }
 
 void Animator::Update(float dt) {
-    if (frameTime == 0) return; // Se frameTime for 0, não há animação
+    if (frameTime <= 0) return; // Se frameTime for 0, não há animação
 
-    timeElapsed += 1; // Usando 1 enquanto não temos dt real 
+    timeElapsed += dt; // Agora somamos frações de segundo reais
 
     if (timeElapsed >= frameTime) {
         currentFrame++;
-        timeElapsed = 0; // 
+        timeElapsed = 0;
 
         if (currentFrame > frameEnd) {
             currentFrame = frameStart; // Loop da animação
