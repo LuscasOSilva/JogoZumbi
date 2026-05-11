@@ -36,6 +36,7 @@ State::State() : music("audio/BGM.wav") {
     AddObject(zombieObj);
 
     music.Play();
+    Mix_VolumeMusic(10);
 }
 
 State::~State() {

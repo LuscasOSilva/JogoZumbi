@@ -9,26 +9,11 @@ std::unordered_map<std::string, Mix_Music*> Resources::musicTable;
 std::unordered_map<std::string, Mix_Chunk*> Resources::soundTable;
 
 SDL_Texture* Resources::GetImage(std::string file) {
-    // Tenta encontrar o arquivo na tabela
-    auto it = imageTable.find(file);
-    if (it != imageTable.end()) {
-        return it->second; // Já estava carregado!
-    }
-
-    // Não estava carregado, vamos carregar agora
-    SDL_Texture* texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file.c_str());
-    if (texture != nullptr) {
-        imageTable[file] = texture; // Guarda para a próxima vez
-    }
-    return texture;
-}
-
-void Resources::ClearImages() {
-    // Percorre a tabela destruindo as texturas reais
-    for (auto& pair : imageTable) {
-        SDL_DestroyTexture(pair.second);
-    }
-    imageTable.clear(); // Esvazia a tabela
+    if (imageTable.find(file) != imageTable.end()) return imageTable[file];
+    
+    SDL_Texture* tex = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file.c_str());
+    if (tex) imageTable[file] = tex;
+    return tex;
 }
 
 Mix_Music* Resources::GetMusic(std::string file) {
@@ -47,33 +32,41 @@ Mix_Music* Resources::GetMusic(std::string file) {
     return music;
 }
 
-void Resources::ClearMusics() {
-    for (auto& pair : musicTable) {
-        Mix_FreeMusic(pair.second); // Libera a memória da música
-    }
-    musicTable.clear();
-}
-
 // --- GERENCIAMENTO DE SONS (CHUNKS)
 Mix_Chunk* Resources::GetSound(std::string file) {
-    auto it = soundTable.find(file);
-    if (it != soundTable.end()) {
-        return it->second;
-    }
-
+    if (soundTable.find(file) != soundTable.end()) return soundTable[file];
+    
     Mix_Chunk* chunk = Mix_LoadWAV(file.c_str());
-    if (chunk == nullptr) {
-        std::cerr << "Erro ao carregar som: " << Mix_GetError() << std::endl;
-        return nullptr;
-    }
-
-    soundTable[file] = chunk;
+    if (chunk) soundTable[file] = chunk;
     return chunk;
 }
 
-void Resources::ClearSounds() {
-    for (auto& pair : soundTable) {
-        Mix_FreeChunk(pair.second); // Libera o som da memória
+void Resources::ClearImages() {
+    // Percorre o mapa de texturas
+    for (auto const& [key, texture] : imageTable) {
+        if (texture != nullptr) {
+            SDL_DestroyTexture(texture); // Desaloca a textura da GPU
+        }
     }
-    soundTable.clear();
+    imageTable.clear(); // Limpa as entradas do mapa
+}
+
+void Resources::ClearMusics() {
+    // Percorre o mapa de músicas
+    for (auto const& [key, music] : musicTable) {
+        if (music != nullptr) {
+            Mix_FreeMusic(music); // Libera a música da memória
+        }
+    }
+    musicTable.clear(); // Limpa as entradas do mapa
+}
+
+void Resources::ClearSounds() {
+    // Percorre o mapa de efeitos sonoros (chunks)
+    for (auto const& [key, chunk] : soundTable) {
+        if (chunk != nullptr) {
+            Mix_FreeChunk(chunk); // Libera o som da memória
+        }
+    }
+    soundTable.clear(); // Limpa as entradas do mapa
 }

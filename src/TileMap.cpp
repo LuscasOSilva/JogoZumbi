@@ -9,6 +9,8 @@ TileMap::TileMap(GameObject& associated, std::string file, TileSet* tileSet)
 }
 
 void TileMap::Load(std::string file) {
+    tileMatrix.clear(); //Limpa o mapa antigo antes de ler o novo
+
     std::ifstream f(file);
     if (!f.is_open()) {
         std::cerr << "Erro ao abrir mapa: " << file << std::endl;
@@ -22,7 +24,7 @@ void TileMap::Load(std::string file) {
     int tileIndex;
     while (f >> tileIndex >> comma) {
         // No formato TileD, o índice 1 pode representar vazio conforme o PDF
-        tileMatrix.push_back(tileIndex - 1); 
+        tileMatrix.push_back(tileIndex); 
     }
 }
 
@@ -32,16 +34,20 @@ int& TileMap::At(int x, int y, int z) {
 }
 
 void TileMap::RenderLayer(int layer, int cameraX, int cameraY) {
-    int tw = tileSet->GetTileWidth();
-    int th = tileSet->GetTileHeight();
+    int tw = tileSet->GetTileWidth(); //64
+    int th = tileSet->GetTileHeight();  //64
 
     for (int y = 0; y < mapHeight; y++) {
         for (int x = 0; x < mapWidth; x++) {
-            int tileIndex = At(x, y, layer);
-            // Renderiza considerando a posição do GameObject (box)
-            tileSet->RenderTile(tileIndex, 
-                                x * tw + associated.box.x - cameraX, 
-                                y * th + associated.box.y - cameraY);
+            int index = At(x, y, layer);
+            if (index >= 0) {
+                // Garante que não renderiza tiles vazios (-1)
+                // O tile deve respeitar a posição do mapObj (associated.box)
+                // Renderiza considerando a posição do GameObject (box)
+                tileSet->RenderTile(index, 
+                                    x * tw + associated.box.x - cameraX, 
+                                    y * th + associated.box.y - cameraY);
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ Zombie::Zombie(GameObject& associated) : Component(associated) {
 
     anim->SetAnimation("walking"); // Começa andando1
 
-    associated.AddComponent(new Sound(associated, "audio/dead.wav"));
+    associated.AddComponent(new Sound(associated, "audio/Dead.wav"));
 }
 
 void Zombie::Damage(int damage) {
@@ -34,7 +34,7 @@ void Zombie::Damage(int damage) {
         if (anim != nullptr) {
             anim->SetAnimation("dead");
         }
-        
+
         // 2. Toca o som de morte
         // Buscamos o componente Sound associado a este GameObject
         Sound* sound = (Sound*)associated.GetComponent<Sound>();
