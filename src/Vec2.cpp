@@ -4,27 +4,47 @@
 Vec2::Vec2() : x(0), y(0) {}
 Vec2::Vec2(float x, float y) : x(x), y(y) {}
 
-Vec2 Vec2::operator+(const Vec2& v) const { return Vec2(x + v.x, y + v.y); }
-Vec2 Vec2::operator-(const Vec2& v) const { return Vec2(x - v.x, y - v.y); }
-Vec2 Vec2::operator*(const float scalar) const { return Vec2(x * scalar, y * scalar); }
-
-float Vec2::Magnitude() const {
-    return std::sqrt(x * x + y * y);
+Vec2 Vec2::operator+(const Vec2& rhs) const {
+    return Vec2(x + rhs.x, y + rhs.y);
 }
 
-Vec2 Vec2::Normalize() const {
-    float mag = Magnitude();
-    return (mag != 0) ? (*this * (1.0f / mag)) : Vec2(0, 0);
+Vec2 Vec2::operator-(const Vec2& rhs) const {
+    return Vec2(x - rhs.x, y - rhs.y);
+}
+
+Vec2 Vec2::operator*(const float rhs) const {
+    return Vec2(x * rhs, y * rhs);
+}
+
+float Vec2::GetMagnitude() const {
+    return std::sqrt((x * x) + (y * y));
+}
+
+Vec2 Vec2::GetNormalized() const {
+    float mag = GetMagnitude();
+    if (mag == 0) return Vec2(0, 0); // Previne divisão por zero
+    return Vec2(x / mag, y / mag);
+}
+
+float Vec2::Distance(const Vec2& target) const {
+    Vec2 diff = target - *this;
+    return diff.GetMagnitude();
 }
 
 float Vec2::GetAngle() const {
-    return std::atan2(y, x);
+    // atan2 resolve os sinais automaticamente nos 4 quadrantes
+    return std::atan2(y, x); 
 }
 
-Vec2 Vec2::Rotate(float angle) const {
-    // Fórmulas de rotação do PDF 
-    return Vec2(
-        x * std::cos(angle) - y * std::sin(angle),
-        y * std::cos(angle) + x * std::sin(angle)
-    );
+float Vec2::GetAngle(const Vec2& target) const {
+    Vec2 diff = target - *this;
+    return diff.GetAngle();
+}
+
+void Vec2::Rotate(float angle) {
+    float oldX = x;
+    float oldY = y;
+    // Matriz de rotação 2D
+    x = oldX * std::cos(angle) - oldY * std::sin(angle);
+    y = oldX * std::sin(angle) + oldY * std::cos(angle);
 }

@@ -14,6 +14,46 @@
     #define LEFT_MOUSE_BUTTON SDL_BUTTON_LEFT
 #endif
 
+State::State() {
+    quitRequested = false;
+    started = false; // Inicializa como falso
+    LoadAssets();
+}
+
+
+void State::Start() {
+    // Passa por todos os objetos criados no construtor e inicializa-os
+    for (size_t i = 0; i < objectArray.size(); i++) {
+        objectArray[i]->Start();
+    }
+    started = true; // A partir de agora, novos objetos dão Start imediatamente
+}
+
+
+std::weak_ptr<GameObject> State::AddObject(GameObject* go) {
+    // Transforma o ponteiro bruto em um ponteiro inteligente gerenciado
+    std::shared_ptr<GameObject> sh_go(go);
+    objectArray.push_back(sh_go);
+
+    // Se a fase já começou, o objeto recém-criado precisa do seu Start()
+    if (started) {
+        sh_go->Start();
+    }
+
+    // Retorna uma referência fraca (segura para os outros objetos monitorarem)
+    return std::weak_ptr<GameObject>(sh_go);
+}
+
+std::weak_ptr<GameObject> State::GetObjectPtr(GameObject* go) {
+    // Procura o objeto no vetor para retornar o weak_ptr correspondente
+    for (size_t i = 0; i < objectArray.size(); i++) {
+        if (objectArray[i].get() == go) {
+            return std::weak_ptr<GameObject>(objectArray[i]);
+        }
+    }
+    return std::weak_ptr<GameObject>(); // Retorna vazio se não achar
+}
+
 // Construtor
 State::State() : music("audio/BGM.wav") {
     quitRequested = false;

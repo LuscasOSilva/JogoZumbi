@@ -118,17 +118,17 @@ State& Game::GetState() {
 
 
 void Game::Run() {
-    // O Game Loop roda enquanto QuitRequested for false
-    while (!state->QuitRequested() && !InputManager::GetInstance().QuitRequested()) {
-        CalculateDeltaTime(); // 1. Calcula o tempo real deste frame
-        InputManager::GetInstance().Update(); // 2. Lê os inputs
+    // Ativa o Start do estado inicial antes de começar o loop
+    state->Start(); 
 
-        state->Update(dt); // 3. Passa o dt real para a lógica do jogo
+    while (!state->QuitRequested() && !InputManager::GetInstance().QuitRequested()) {
+        CalculateDeltaTime();
+        InputManager::GetInstance().Update();
+
+        state->Update(dt);
         state->Render();
 
         SDL_RenderPresent(renderer);
-        // O delay não é mais necessário para a lógica, 
-        // mas pode-se usar um pequeno delay para não consumir 100% da CPU.
     }
 
     // Limpeza de recursos (Trabalho 3)

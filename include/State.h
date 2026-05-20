@@ -2,7 +2,7 @@
 #define STATE_H
 
 #include <vector>
-#include <memory>
+#include <memory> // Obrigatório para shared_ptr e weak_ptr
 #include "GameObject.h"
 #include "Music.h"
 
@@ -11,16 +11,26 @@ public:
     State();
     ~State();
 
-    bool QuitRequested();
+    void Start(); // Nova etapa do ciclo de vida
+
+    // Agora retornam e gerenciam ponteiros inteligentes
+    std::weak_ptr<GameObject> AddObject(GameObject* go);
+    std::weak_ptr<GameObject> GetObjectPtr(GameObject* go);
+
     void Update(float dt);
     void Render();
-    void AddObject(GameObject* go); // Adiciona novos objetos [cite: 431]
+
+    bool QuitRequested();
 
 private:
+    void LoadAssets();
+
     Music music;
     bool quitRequested;
-    // Vetor de ponteiros inteligentes para GameObjects [cite: 432]
-    std::vector<std::unique_ptr<GameObject>> objectArray; 
+    bool started; // Indica se o Start() já foi executado
+
+    // O vetor agora protege os objetos contra deleção acidental
+    std::vector<std::shared_ptr<GameObject>> objectArray;
 };
 
 #endif

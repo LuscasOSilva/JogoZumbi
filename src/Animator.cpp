@@ -21,7 +21,7 @@ void Animator::Update(float dt) {
         }
 
         // Atualiza o frame no SpriteRenderer do mesmo objeto
-        SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent<SpriteRenderer>();
+        SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
         if (sr != nullptr) {
             sr->SetFrame(currentFrame);
         }
@@ -37,7 +37,7 @@ void Animator::SetAnimation(std::string name) {
         currentFrame = frameStart;
         timeElapsed = 0;
 
-        SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent<SpriteRenderer>();
+        SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
         if (sr != nullptr) sr->SetFrame(currentFrame);
     }
 }

@@ -4,3 +4,8 @@
 Component::Component(GameObject& associated) : associated(associated) {}
 
 Component::~Component() {}
+
+void Component::Start() {
+    // Por defeito, não faz nada. 
+    // Pode ser reescrito pelas classes derivadas (ex: Gun, Bullet) se necessário.
+}

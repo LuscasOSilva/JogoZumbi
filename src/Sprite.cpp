@@ -4,15 +4,17 @@
 #include "SDL2/SDL_image.h"
 #include <iostream>
 
-Sprite::Sprite() {
+Sprite::Sprite(GameObject& associated) : Component(associated) {
     texture = nullptr;
+    scale = Vec2(1, 1); // Escala original (100%)
     frameCountW = 1;
     frameCountH = 1;
     currentFrame = 0;
 }
 
-Sprite::Sprite(std::string file) {
+Sprite::Sprite(GameObject& associated, std::string file) : Component(associated){
     texture = nullptr;
+    scale = Vec2(1, 1); // Escala original (100%)
     frameCountW = 1;
     frameCountH = 1;
     currentFrame = 0;
@@ -20,9 +22,7 @@ Sprite::Sprite(std::string file) {
 }
 
 Sprite::~Sprite() {
-    if (texture != nullptr) {
-        //SDL_DestroyTexture(texture); // Libera a memória da textura
-    }
+    // Resources já cuida disso
 }
 
 void Sprite::Open(std::string file) {
@@ -56,11 +56,20 @@ void Sprite::Render(int x, int y) {
     SDL_Rect dstRect;
     dstRect.x = x;
     dstRect.y = y;
-    dstRect.w = clipRect.w;
-    dstRect.h = clipRect.h;
+    // A largura e altura reais são multiplicadas pela escala
+    dstRect.w = clipRect.w * scale.x; 
+    dstRect.h = clipRect.h * scale.y;
 
-    // Renderiza a parte selecionada (clipRect) na posição de destino (dstRect)
-    SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
+    // SDL_RenderCopyEx permite rotação e espelhamento
+    SDL_RenderCopyEx(
+        Game::GetInstance().GetRenderer(),
+        texture,
+        &clipRect,
+        &dstRect,
+        associated.angleDeg, // Lê o ângulo atual do GameObject
+        nullptr,             // nullptr faz rodar em torno do centro do próprio dstRect
+        SDL_FLIP_NONE        // Por enquanto sem espelhamento, trataremos disto na arma
+    );
 }
 
 void Sprite::SetFrame(int frame) {
@@ -82,4 +91,19 @@ void Sprite::SetFrameCount(int frameCountW, int frameCountH) {
     // O PDF sugere que, ao mudar a contagem de frames, 
     // devemos atualizar o clip para o frame 0
     SetFrame(0);
+}
+
+void Sprite::SetScale(float scaleX, float scaleY) {
+    // Garante que a escala não seja zero para evitar erros de renderização
+    scale.x = scaleX != 0 ? scaleX : scale.x;
+    scale.y = scaleY != 0 ? scaleY : scale.y;
+}
+
+Vec2 Sprite::GetScale() {
+    return scale;
+}
+
+// Função Is obrigatória do Component
+bool Sprite::Is(std::string type) {
+    return type == "Sprite";
 }
