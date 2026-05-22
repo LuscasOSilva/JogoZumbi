@@ -7,6 +7,8 @@
 #include "InputManager.h"
 #include "Camera.h"
 #include "CameraFollower.h"
+#include "Character.h"
+#include "PlayerController.h"
 #include "SDL2/SDL.h"
 
 #ifndef ESCAPE_KEY
@@ -14,12 +16,56 @@
     #define LEFT_MOUSE_BUTTON SDL_BUTTON_LEFT
 #endif
 
-State::State() {
+// Construtor unificado
+State::State() : music("audio/BGM.wav") {
     quitRequested = false;
-    started = false; // Inicializa como falso
-    LoadAssets();
+    started = false;
+
+    // 1. Criar o Background
+    GameObject* bgObj = new GameObject();
+    bgObj->AddComponent(new SpriteRenderer(*bgObj, "img/Background.png"));
+    bgObj->box.x = 0;
+    bgObj->box.y = 0;
+    bgObj->AddComponent(new CameraFollower(*bgObj));
+    AddObject(bgObj);
+
+    // 2. Criar o Mapa
+    GameObject* mapObj = new GameObject();
+    mapObj->box.x = 0;
+    mapObj->box.y = 0;
+    TileSet* ts = new TileSet(64, 64, "img/Tileset.png");
+    TileMap* tm = new TileMap(*mapObj, "map/map.txt", ts);
+    mapObj->AddComponent(tm);
+    AddObject(mapObj);
+
+    // 3. Instanciar o nosso Jogador
+    GameObject* playerGo = new GameObject();
+    playerGo->box.x = 1280; // Posição central do mapa recomendada pelo PDF
+    playerGo->box.y = 1280;
+
+    // Adiciona o corpo e o cérebro
+    playerGo->AddComponent(new Character(*playerGo, "img/Player.png"));
+    playerGo->AddComponent(new PlayerController(*playerGo));
+
+    AddObject(playerGo);
+
+    // Opcional: Fazer a câmera seguir o jogador automaticamente
+    Camera::Follow(playerGo);
+
+    // 4. Criar o Zombie
+    GameObject* zombieObj = new GameObject();
+    zombieObj->box.x = 600; 
+    zombieObj->box.y = 450; 
+    zombieObj->AddComponent(new Zombie(*zombieObj));
+    AddObject(zombieObj);
+
+    music.Play();
+    Mix_VolumeMusic(10);
 }
 
+State::~State() {
+    objectArray.clear(); 
+}
 
 void State::Start() {
     // Passa por todos os objetos criados no construtor e inicializa-os
@@ -54,50 +100,6 @@ std::weak_ptr<GameObject> State::GetObjectPtr(GameObject* go) {
     return std::weak_ptr<GameObject>(); // Retorna vazio se não achar
 }
 
-// Construtor
-State::State() : music("audio/BGM.wav") {
-    quitRequested = false;
-
-    // 1. Criar o Background como Objeto
-    GameObject* bgObj = new GameObject();
-    bgObj->AddComponent(new SpriteRenderer(*bgObj, "img/Background.png"));
-    bgObj->box.x = 0;
-    bgObj->box.y = 0;
-    bgObj->AddComponent(new CameraFollower(*bgObj));
-    AddObject(bgObj);
-
-    GameObject* mapObj = new GameObject();
-    mapObj->box.x = 0;
-    mapObj->box.y = 0;
-
-    // Cria o TileSet e o TileMap (dimensões 64x64 conforme o PDF)
-    TileSet* ts = new TileSet(64, 64, "img/Tileset.png");
-    TileMap* tm = new TileMap(*mapObj, "map/map.txt", ts);
-
-    mapObj->AddComponent(tm);
-    AddObject(mapObj); // Adicionamos o mapa ANTES dos inimigos para ele ficar no fundo
-
-    // 2. Criar o Zombie (O que vai mudar o visual!)
-    GameObject* zombieObj = new GameObject();
-    zombieObj->box.x = 600; // Posição central 
-    zombieObj->box.y = 450; 
-    zombieObj->AddComponent(new Zombie(*zombieObj));
-    
-    AddObject(zombieObj);
-
-    music.Play();
-    Mix_VolumeMusic(10);
-}
-
-State::~State() {
-    objectArray.clear(); // unique_ptr limpa a memória automaticamente
-}
-
-void State::AddObject(GameObject* go) {
-    // Transforma o ponteiro comum em unique_ptr e adiciona ao vetor
-    objectArray.emplace_back(go); 
-}
-
 void State::Update(float dt) {
     InputManager& input = InputManager::GetInstance();
 
@@ -121,7 +123,7 @@ void State::Update(float dt) {
     }
 
     // 4. Atualiza todos os GameObjects (já passando o dt real)
-    for (int i = 0; i < objectArray.size(); i++) {
+    for (size_t i = 0; i < objectArray.size(); i++) {
         objectArray[i]->Update(dt);
     }
 

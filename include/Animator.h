@@ -15,6 +15,10 @@ public:
     void SetAnimation(std::string name);
     void AddAnimation(std::string name, Animation anim);
 
+    bool Is(std::string type) override;
+
+    std::string current;
+
 private:
     std::unordered_map<std::string, Animation> animations;
     int frameStart, frameEnd, currentFrame;

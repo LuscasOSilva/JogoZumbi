@@ -70,3 +70,5 @@ int TileMap::GetHeight() { return mapHeight; }
 int TileMap::GetDepth() { return mapDepth; }
 
 void TileMap::SetTileSet(TileSet* tileSet) { this->tileSet.reset(tileSet); }
+
+bool TileMap::Is(std::string type) { return type == "TileMap"; }

@@ -19,6 +19,8 @@ public:
     void Update(float dt) override; // Obrigatório implementar
     void Render() override;         // Obrigatório implementar
 
+    bool Is(std::string type) override;
+
 private:
     Mix_Chunk* chunk; //
     int channel;      // Canal onde o som está tocando

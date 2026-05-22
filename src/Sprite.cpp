@@ -4,7 +4,7 @@
 #include "SDL2/SDL_image.h"
 #include <iostream>
 
-Sprite::Sprite(GameObject& associated) : Component(associated) {
+Sprite::Sprite() {
     texture = nullptr;
     scale = Vec2(1, 1); // Escala original (100%)
     frameCountW = 1;
@@ -12,7 +12,7 @@ Sprite::Sprite(GameObject& associated) : Component(associated) {
     currentFrame = 0;
 }
 
-Sprite::Sprite(GameObject& associated, std::string file) : Component(associated){
+Sprite::Sprite(std::string file) {
     texture = nullptr;
     scale = Vec2(1, 1); // Escala original (100%)
     frameCountW = 1;
@@ -48,11 +48,11 @@ void Sprite::SetClip(int x, int y, int w, int h) {
     clipRect.h = h;
 }
 
-int Sprite::GetWidth() { return (width / frameCountW); }
-int Sprite::GetHeight() { return (height / frameCountH); }
+int Sprite::GetWidth() { return (width / frameCountW) * scale.x; }
+int Sprite::GetHeight() { return (height / frameCountH) * scale.y; }
 bool Sprite::IsOpen() { return texture != nullptr; }
 
-void Sprite::Render(int x, int y) {
+void Sprite::Render(int x, int y, float angle) {
     SDL_Rect dstRect;
     dstRect.x = x;
     dstRect.y = y;
@@ -66,7 +66,7 @@ void Sprite::Render(int x, int y) {
         texture,
         &clipRect,
         &dstRect,
-        associated.angleDeg, // Lê o ângulo atual do GameObject
+        angle, // Lê o ângulo atual do GameObject
         nullptr,             // nullptr faz rodar em torno do centro do próprio dstRect
         SDL_FLIP_NONE        // Por enquanto sem espelhamento, trataremos disto na arma
     );
@@ -101,9 +101,4 @@ void Sprite::SetScale(float scaleX, float scaleY) {
 
 Vec2 Sprite::GetScale() {
     return scale;
-}
-
-// Função Is obrigatória do Component
-bool Sprite::Is(std::string type) {
-    return type == "Sprite";
 }

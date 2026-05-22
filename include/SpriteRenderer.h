@@ -11,6 +11,8 @@ public:
 
     void Update(float dt) override; // Fica vazio
     void Render() override;
+
+    bool Is(std::string type) override;
     
     void Open(std::string file);
     void SetFrame(int frame);

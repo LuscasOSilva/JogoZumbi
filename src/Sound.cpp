@@ -42,3 +42,5 @@ Sound::~Sound() {
 void Sound::Update(float dt) {}
 void Sound::Render() {}
 bool Sound::IsOpen() { return chunk != nullptr; }
+
+bool Sound::Is(std::string type) { return type == "Sound"; }

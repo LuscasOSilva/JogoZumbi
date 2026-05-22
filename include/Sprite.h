@@ -7,13 +7,16 @@
 
 class Sprite {
 public:
-    Sprite(GameObject& associated); // Construtor padrão
-    Sprite(GameObject& associated, std::string file); // Construtor que já abre um arquivo
+    Sprite();                     // Construtor padrão
+    Sprite(std::string file);     // Construtor que já abre um arquivo
     ~Sprite();                    // Destrutor
 
     void Open(std::string file);  // Carrega a imagem
     void SetClip(int x, int y, int w, int h); // Define a área de corte
-    void Render(int x, int y);    // Desenha na tela
+    
+    // Novo parâmetro de ângulo (padrão é 0)
+    void Render(int x, int y, float angle = 0);    // Desenha na tela
+    
     int GetWidth();               // Retorna a largura
     int GetHeight();              // Retorna a altura
     bool IsOpen();                // Checa se a textura está alocada

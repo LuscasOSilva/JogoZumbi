@@ -54,3 +54,5 @@ void Zombie::Update(float dt) {
 void Zombie::Render() {
     // Vazio, pois o SpriteRenderer já cuida do desenho
 }
+
+bool Zombie::Is(std::string type) { return type == "Zombie"; }

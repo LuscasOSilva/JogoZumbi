@@ -19,9 +19,14 @@ void SpriteRenderer::Open(std::string file) {
 
 void SpriteRenderer::Render() {
     // Renderiza na posição da box do GameObject
-    sprite.Render(associated.box.x - Camera::pos.x, associated.box.y - Camera::pos.y);
+    sprite.Render(associated.box.x - Camera::pos.x, associated.box.y - Camera::pos.y, associated.angleDeg);
 }
 
 void SpriteRenderer::Update(float dt) {}
 
 void SpriteRenderer::SetFrame(int frame) { sprite.SetFrame(frame); }
+
+// Adicionado o Is() obrigatório!
+bool SpriteRenderer::Is(std::string type) {
+    return type == "SpriteRenderer";
+}

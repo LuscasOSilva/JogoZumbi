@@ -23,6 +23,8 @@ public:
     int GetDepth();
     
     void Update(float dt) override;
+    
+    bool Is(std::string type) override;
 
 private:
     std::vector<int> tileMatrix; // Vetor que simula a matriz 3D

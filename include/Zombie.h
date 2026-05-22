@@ -12,6 +12,8 @@ public:
 
     void Damage(int damage); // Reduz vida
 
+    bool Is(std::string type) override;
+
 private:
     int hitpoints;
 };

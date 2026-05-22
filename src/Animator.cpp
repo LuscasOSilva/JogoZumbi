@@ -29,16 +29,20 @@ void Animator::Update(float dt) {
 }
 
 void Animator::SetAnimation(std::string name) {
-    if (animations.count(name)) {
-        Animation anim = animations[name];
-        frameStart = anim.frameStart;
-        frameEnd = anim.frameEnd;
-        frameTime = anim.frameTime;
-        currentFrame = frameStart;
-        timeElapsed = 0;
+    if (this->current != name) {
+        this->current = name;
+        if (animations.count(name)) {
+            Animation anim = animations[name];
+            frameStart = anim.frameStart;
+            frameEnd = anim.frameEnd;
+            frameTime = anim.frameTime;
+            currentFrame = frameStart;
+            timeElapsed = 0;
 
-        SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
-        if (sr != nullptr) sr->SetFrame(currentFrame);
+            SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
+            if (sr != nullptr) sr->SetFrame(currentFrame);
+            //if (sr != nullptr) sr->SetFrame(currentFrame, anim.flip);
+        }
     }
 }
 
@@ -49,3 +53,5 @@ void Animator::AddAnimation(std::string name, Animation anim) {
 }
 
 void Animator::Render() {}
+
+bool Animator::Is(std::string type) { return type == "Animator"; }
