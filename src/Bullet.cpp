@@ -23,7 +23,8 @@ Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, flo
     this->speed.y = std::sin(angle) * speed;
 
     // 4. A SDL usa graus para rotacionar a imagem, então convertemos radianos para graus
-    associated.angleDeg = angle * 180.0 / M_PI;
+    // Compensa o ângulo em que a imagem original foi desenhada
+    associated.angleDeg = (angle * 180.0 / M_PI) + 90.0;
 }
 
 void Bullet::Update(float dt) {

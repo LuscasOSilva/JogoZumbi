@@ -25,6 +25,8 @@ public:
     void SetScale(float scaleX, float scaleY);
     Vec2 GetScale();
 
+    void SetFlip(SDL_RendererFlip flip);
+
 private:
     SDL_Texture* texture;         // A imagem em si
     int width;                    // Largura da imagem
@@ -34,6 +36,7 @@ private:
     int frameCountH;
     int currentFrame;
     Vec2 scale; // Novo: Controlo de escala (x, y)
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
 };
 
 #endif

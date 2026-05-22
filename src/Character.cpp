@@ -25,13 +25,13 @@ Character::Character(GameObject& associated, std::string sprite) : Component(ass
     // Cria o Animator e guarda num ponteiro para configurarmos as animações
     Animator* anim = new Animator(associated);
     
-    /* ATENÇÃO: Descomente e ajuste as linhas abaixo dependendo de 
-       como você declarou a função AddAnimation no seu Animator.h!
-       A assinatura costuma ser: (nome, frameStart, frameEnd, frameTime)
-    */
-    // anim->AddAnimation("idle", 0, 0, 1.0f);
-    // anim->AddAnimation("walking", 0, 5, 0.1f); // Ajuste os frames corretos do andar
-    // anim->AddAnimation("dead", 10, 11, 0.2f);  // Os 2 túmulos que você mencionou
+    // Adiciona as animações passando o (frameInicial, frameFinal, tempoPorFrame)
+    anim->AddAnimation("idle", Animation(0, 0, 1.0f));
+    anim->AddAnimation("walking", Animation(0, 5, 0.1f));
+    anim->AddAnimation("dead", Animation(10, 11, 0.2f));
+    
+    // Força a engine a recortar e mostrar o primeiro frame imediatamente!
+    anim->SetAnimation("idle"); 
     
     associated.AddComponent(anim);
 }
@@ -80,6 +80,20 @@ void Character::Update(float dt) {
             // Move a box
             associated.box.x += speed.x * dt;
             associated.box.y += speed.y * dt;
+
+            if (task.type == MOVE) {
+                speed = task.pos * linearSpeed;
+                associated.box.x += speed.x * dt;
+                associated.box.y += speed.y * dt;
+                if (speed.GetMagnitude() > 0) isMoving = true;
+                
+                // NOVO: Espelha o Sprite se for para a esquerda
+                SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
+                if (sr) {
+                    if (speed.x < 0) sr->SetFlip(SDL_FLIP_HORIZONTAL);
+                    else if (speed.x > 0) sr->SetFlip(SDL_FLIP_NONE);
+                }
+            }
             
             if (speed.GetMagnitude() > 0) isMoving = true;
             

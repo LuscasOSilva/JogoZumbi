@@ -68,7 +68,7 @@ void Sprite::Render(int x, int y, float angle) {
         &dstRect,
         angle, // Lê o ângulo atual do GameObject
         nullptr,             // nullptr faz rodar em torno do centro do próprio dstRect
-        SDL_FLIP_NONE        // Por enquanto sem espelhamento, trataremos disto na arma
+        flip        // Por enquanto sem espelhamento, trataremos disto na arma
     );
 }
 
@@ -101,4 +101,8 @@ void Sprite::SetScale(float scaleX, float scaleY) {
 
 Vec2 Sprite::GetScale() {
     return scale;
+}
+
+void Sprite::SetFlip(SDL_RendererFlip flip) {
+    this->flip = flip;
 }

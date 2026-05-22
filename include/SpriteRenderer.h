@@ -16,6 +16,7 @@ public:
     
     void Open(std::string file);
     void SetFrame(int frame);
+    void SetFlip(SDL_RendererFlip flip);
 
 private:
     Sprite sprite;

@@ -30,3 +30,7 @@ void SpriteRenderer::SetFrame(int frame) { sprite.SetFrame(frame); }
 bool SpriteRenderer::Is(std::string type) {
     return type == "SpriteRenderer";
 }
+
+void SpriteRenderer::SetFlip(SDL_RendererFlip flip) {
+    sprite.SetFlip(flip);
+}

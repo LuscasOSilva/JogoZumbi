@@ -22,8 +22,11 @@ Gun::Gun(GameObject& associated, std::weak_ptr<GameObject> character)
     Animator* anim = new Animator(associated);
     
     // A arma tem animações de ficar parada e recarregando
-    // anim->AddAnimation("idle", 0, 0, 1.0f);
-    // anim->AddAnimation("reloading", 1, 5, 0.1f); 
+    anim->AddAnimation("idle", Animation(0, 0, 1.0f));
+    anim->AddAnimation("reloading", Animation(1, 5, 0.1f)); 
+    
+    // Força o recorte correto
+    anim->SetAnimation("idle");
     
     associated.AddComponent(anim);
     
@@ -87,6 +90,17 @@ void Gun::Shoot(Vec2 target) {
         angle = gunCenter.GetAngle(target);
         associated.angleDeg = angle * 180.0 / M_PI;
 
+        // NOVO: Corrige a arma de cabeça para baixo
+        SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
+        if (sr != nullptr) {
+            // Se o X do alvo for menor que o X da arma, o tiro é para a esquerda!
+            if (target.x < gunCenter.x) {
+                sr->SetFlip(SDL_FLIP_VERTICAL); 
+            } else {
+                sr->SetFlip(SDL_FLIP_NONE);
+            }
+        }
+        
         // 2. Toca o som do tiro
         shotSound->Play();
 
