@@ -16,6 +16,8 @@ public:
     
     int GetDamage();
 
+    void NotifyCollision(GameObject& other) override;
+
 private:
     Vec2 speed;         // Velocidade já decomposta em X e Y (baseada no ângulo)
     float distanceLeft; // Quanto a bala ainda pode andar

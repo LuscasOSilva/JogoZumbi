@@ -14,6 +14,8 @@ public:
 
     bool Is(std::string type) override;
 
+    void NotifyCollision(GameObject& other) override;
+
 private:
     int hitpoints;
 };

@@ -3,6 +3,8 @@
 #include "SpriteRenderer.h"
 #include "Animator.h"
 #include "Sound.h"
+#include "Collider.h"
+#include "Bullet.h"
 #include <iostream>
 
 Zombie::Zombie(GameObject& associated) : Component(associated) {
@@ -22,33 +24,36 @@ Zombie::Zombie(GameObject& associated) : Component(associated) {
     anim->SetAnimation("walking"); // Começa andando1
 
     associated.AddComponent(new Sound(associated, "audio/Dead.wav"));
+
+    // Adiciona a caixa de colisão ao inimigo
+    associated.AddComponent(new Collider(associated));
 }
 
 void Zombie::Damage(int damage) {
-    // Reduz hitpoints
     hitpoints -= damage;
     
-    // Se a vida chegar a zero, troca para a animação de morto
     if (hitpoints <= 0) {
-        Animator* anim = (Animator*)associated.GetComponent<Animator>();
+        Animator* anim = (Animator*)associated.GetComponent("Animator");
         if (anim != nullptr) {
             anim->SetAnimation("dead");
         }
 
-        // 2. Toca o som de morte
-        // Buscamos o componente Sound associado a este GameObject
-        Sound* sound = (Sound*)associated.GetComponent<Sound>();
+        Sound* sound = (Sound*)associated.GetComponent("Sound");
         if (sound != nullptr) {
-            sound->Play(1); // Play(1) toca o som exatamente uma vez[cite: 2]
+            sound->Play(1); 
+        }
+
+        // NOVO POLIMENTO DO TRABALHO 6: Remove o Collider do Zumbi morto!
+        Collider* collider = (Collider*)associated.GetComponent("Collider");
+        if (collider != nullptr) {
+            associated.RemoveComponent(collider);
         }
     }
 }
 
 void Zombie::Update(float dt) {
     // Por enquanto, causa 1 de dano por frame para testar a morte
-    if (hitpoints > 0) {
-        Damage(1);
-    }
+    // if (hitpoints > 0) Damage(1);
 }
 
 void Zombie::Render() {
@@ -56,3 +61,13 @@ void Zombie::Render() {
 }
 
 bool Zombie::Is(std::string type) { return type == "Zombie"; }
+
+void Zombie::NotifyCollision(GameObject& other) {
+    // Verifica se o que bateu nele foi uma bala
+    Bullet* bullet = (Bullet*)other.GetComponent("Bullet");
+    
+    if (bullet != nullptr) {
+        // Recebe o dano da bala
+        Damage(bullet->GetDamage());
+    }
+}

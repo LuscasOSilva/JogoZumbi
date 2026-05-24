@@ -9,6 +9,8 @@
 #include "CameraFollower.h"
 #include "Character.h"
 #include "PlayerController.h"
+#include "Collision.h"
+#include "Collider.h"
 #include "SDL2/SDL.h"
 
 #ifndef ESCAPE_KEY
@@ -127,7 +129,26 @@ void State::Update(float dt) {
         objectArray[i]->Update(dt);
     }
 
-    // 5. Lógica de remoção de objetos mortos (opcional neste trabalho)
+    // --- VERIFICAÇÃO DE COLISÕES ---
+    for (size_t i = 0; i < objectArray.size(); i++) {
+        for (size_t j = i + 1; j < objectArray.size(); j++) {
+            
+            // Tenta pegar o componente Collider de ambos os objetos
+            Collider* a = (Collider*)objectArray[i]->GetComponent("Collider");
+            Collider* b = (Collider*)objectArray[j]->GetComponent("Collider");
+
+            // Se os dois objetos possuem Collider, testamos a batida
+            if (a != nullptr && b != nullptr) {
+                // O IsColliding recebe os Rects e os ângulos em radianos
+                if (Collision::IsColliding(a->box, b->box, objectArray[i]->angleDeg * (M_PI / 180.0), objectArray[j]->angleDeg * (M_PI / 180.0))) {
+                    
+                    // Se colidiu, avisa os dois objetos!
+                    objectArray[i]->NotifyCollision(*objectArray[j]);
+                    objectArray[j]->NotifyCollision(*objectArray[i]);
+                }
+            }
+        }
+    }
 }
 
 void State::Render() {

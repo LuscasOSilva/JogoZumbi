@@ -5,6 +5,7 @@
 #include "Gun.h"
 #include "State.h"
 #include "GameObject.h"
+#include "Collider.h"
 
 // Inicialização do ponteiro estático global
 Character* Character::player = nullptr;
@@ -34,6 +35,9 @@ Character::Character(GameObject& associated, std::string sprite) : Component(ass
     anim->SetAnimation("idle"); 
     
     associated.AddComponent(anim);
+    
+    // Adiciona a caixa de colisão ao jogador
+    associated.AddComponent(new Collider(associated));
 }
 
 Character::~Character() {

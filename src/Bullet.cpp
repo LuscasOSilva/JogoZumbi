@@ -1,6 +1,8 @@
 #include "Bullet.h"
 #include "SpriteRenderer.h"
 #include "GameObject.h"
+#include "Collider.h"
+#include "Zombie.h"
 #include <cmath>
 
 // A constante PI para a conversão de ângulos
@@ -25,6 +27,9 @@ Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, flo
     // 4. A SDL usa graus para rotacionar a imagem, então convertemos radianos para graus
     // Compensa o ângulo em que a imagem original foi desenhada
     associated.angleDeg = (angle * 180.0 / M_PI) + 90.0;
+
+    // Adiciona a caixa de colisão ao projétil
+    associated.AddComponent(new Collider(associated));
 }
 
 void Bullet::Update(float dt) {
@@ -54,4 +59,14 @@ bool Bullet::Is(std::string type) {
 
 int Bullet::GetDamage() {
     return damage;
+}
+
+void Bullet::NotifyCollision(GameObject& other) {
+    // Verifica se o objeto com quem bateu é um Zumbi
+    Zombie* zombie = (Zombie*)other.GetComponent("Zombie");
+
+    if (zombie != nullptr) {
+        // Se bateu no zumbi, a bala some!
+        associated.RequestDelete();
+    }
 }

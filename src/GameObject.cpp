@@ -61,3 +61,9 @@ Component* GameObject::GetComponent(std::string type) {
     }
     return nullptr;
 }
+
+void GameObject::NotifyCollision(GameObject& other) {
+    for (int i = 0; i < components.size(); i++) {
+        components[i]->NotifyCollision(other);
+    }
+}

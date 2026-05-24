@@ -38,6 +38,8 @@ public:
     bool started; // Variável para controlar o estado de arranque
     double angleDeg; // Novo: Ângulo de rotação em graus
 
+    void NotifyCollision(GameObject& other);
+
 private:
     std::vector<std::unique_ptr<Component>> components; // Lista de componentes
     bool isDead; // Flag de destruição 
