@@ -11,6 +11,7 @@
 #include "PlayerController.h"
 #include "Collision.h"
 #include "Collider.h"
+#include "Spawner.h"
 #include "SDL2/SDL.h"
 
 #ifndef ESCAPE_KEY
@@ -60,6 +61,12 @@ State::State() : music("audio/BGM.wav") {
     zombieObj->box.y = 450; 
     zombieObj->AddComponent(new Zombie(*zombieObj));
     AddObject(zombieObj);
+
+    // 5. Instanciar o Spawner (Gerador de Inimigos)
+    GameObject* spawnerGo = new GameObject();
+    // Cria um zumbi a cada 3.5 segundos
+    spawnerGo->AddComponent(new Spawner(*spawnerGo, 3.5f)); 
+    AddObject(spawnerGo);
 
     music.Play();
     Mix_VolumeMusic(10);
@@ -147,6 +154,14 @@ void State::Update(float dt) {
                     objectArray[j]->NotifyCollision(*objectArray[i]);
                 }
             }
+        }
+    }
+    // --- LIMPEZA DE OBJETOS MORTOS ---
+    // Varremos o array de trás para a frente. Assim, ao apagar um elemento, 
+    // não estragamos a ordem dos índices dos elementos que ainda não verificámos.
+    for (int i = objectArray.size() - 1; i >= 0; i--) {
+        if (objectArray[i]->IsDead()) {
+            objectArray.erase(objectArray.begin() + i);
         }
     }
 }

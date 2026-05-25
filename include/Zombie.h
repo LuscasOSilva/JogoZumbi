@@ -18,6 +18,7 @@ public:
 
 private:
     int hitpoints;
+    float linearSpeed;
 };
 
 #endif

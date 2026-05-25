@@ -3,6 +3,8 @@
 
 #include "Component.h"
 #include "Vec2.h"
+#include "Rect.h"
+#include "GameObject.h"
 #include <string>
 #include <queue>
 #include <memory>
@@ -32,6 +34,8 @@ public:
     void Issue(Command task);
 
     static Character* player; // Ponteiro global para facilitar o acesso pelos inimigos
+
+    Rect GetBox() const { return associated.box; }
 
 private:
     std::weak_ptr<GameObject> gun;
