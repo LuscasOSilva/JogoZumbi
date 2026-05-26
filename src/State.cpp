@@ -123,13 +123,13 @@ void State::Update(float dt) {
     // 3. Exemplo: Se clicar com o mouse, cria um Zombie na posição do mouse
     // IMPORTANTE: O mouse dá a posição na TELA. 
     // Para criar no MUNDO, somamos a posição da Câmera.
-    if (input.MousePress(LEFT_MOUSE_BUTTON)) {
+    /*if (input.MousePress(LEFT_MOUSE_BUTTON)) {
         GameObject* go = new GameObject();
         go->box.x = input.GetMouseX() + Camera::pos.x;
         go->box.y = input.GetMouseY() + Camera::pos.y;
         go->AddComponent(new Zombie(*go));
         AddObject(go);
-    }
+    }*/
 
     // 4. Atualiza todos os GameObjects (já passando o dt real)
     for (size_t i = 0; i < objectArray.size(); i++) {

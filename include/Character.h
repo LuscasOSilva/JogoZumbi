@@ -37,6 +37,8 @@ public:
 
     Rect GetBox() const { return associated.box; }
 
+    void NotifyCollision(GameObject& other) override;
+
 private:
     std::weak_ptr<GameObject> gun;
     std::queue<Command> taskQueue;
@@ -45,6 +47,7 @@ private:
     int hp;
     
     Timer deathTimer;
+    Timer damageCooldown;
 };
 
 #endif

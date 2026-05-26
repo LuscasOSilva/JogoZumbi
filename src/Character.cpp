@@ -6,6 +6,7 @@
 #include "State.h"
 #include "GameObject.h"
 #include "Collider.h"
+#include "Zombie.h"
 
 // Inicialização do ponteiro estático global
 Character* Character::player = nullptr;
@@ -59,13 +60,23 @@ void Character::Start() {
 }
 
 void Character::Update(float dt) {
+    // Atualiza os cronômetros
+    damageCooldown.Update(dt);
+
     // Verifica se o personagem já morreu
     if (hp <= 0) {
+        // Se morreu, destroi a arma instantaneamente
+        std::shared_ptr<GameObject> gunGo = gun.lock();
+        if (gunGo) {
+            gunGo->RequestDelete();
+        }
+
+        // Toca a animação do túmulo
         Animator* anim = (Animator*)associated.GetComponent("Animator");
         if (anim) anim->SetAnimation("dead");
         
         // deathTimer.Update(dt);
-        // if (deathTimer.Get() > TEMPO_DA_ANIMACAO_DE_MORTE) associated.RequestDelete();
+        // if (deathTimer.Get() > 1.0f) associated.RequestDelete();
         
         return; // Não faz mais nada se estiver morto
     }
@@ -78,34 +89,24 @@ void Character::Update(float dt) {
         taskQueue.pop(); // Remove a tarefa da fila
 
         if (task.type == MOVE) {
-            // task.pos aqui funciona como um vetor de direção normalizado (tamanho 1)
             speed = task.pos * linearSpeed;
             
-            // Move a box
+            // Move a box uma única vez
             associated.box.x += speed.x * dt;
             associated.box.y += speed.y * dt;
-
-            if (task.type == MOVE) {
-                speed = task.pos * linearSpeed;
-                associated.box.x += speed.x * dt;
-                associated.box.y += speed.y * dt;
-                if (speed.GetMagnitude() > 0) isMoving = true;
+            
+            if (speed.GetMagnitude() > 0) {
+                isMoving = true;
                 
-                // NOVO: Espelha o Sprite se for para a esquerda
+                // Espelha o Sprite se for para a esquerda
                 SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
                 if (sr) {
                     if (speed.x < 0) sr->SetFlip(SDL_FLIP_HORIZONTAL);
                     else if (speed.x > 0) sr->SetFlip(SDL_FLIP_NONE);
                 }
             }
-            
-            if (speed.GetMagnitude() > 0) isMoving = true;
-            
-            // Opcional: Se for para a esquerda, espelha o sprite
-            // SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
-            // se speed.x < 0, sr->SetFlip(SDL_FLIP_HORIZONTAL); etc...
-            
-        } else if (task.type == SHOOT) {
+        } 
+        else if (task.type == SHOOT) {
             // Tenta obter acesso seguro à arma usando o .lock() do weak_ptr
             std::shared_ptr<GameObject> gunPtr = gun.lock();
             if (gunPtr) {
@@ -135,4 +136,28 @@ bool Character::Is(std::string type) {
 
 void Character::Issue(Command task) {
     taskQueue.push(task); // Adiciona a tarefa à fila
+}
+
+void Character::NotifyCollision(GameObject& other) {
+    // Verifica se o que bateu no jogador foi um zumbi
+    Zombie* zombie = (Zombie*)other.GetComponent("Zombie");
+    
+    if (zombie != nullptr && !other.IsDead()) {
+        // Só leva dano se já passou 1 segundo desde a última mordida 
+        // ou se for a primeira mordida (tempo = 0)
+        if (damageCooldown.Get() >= 1.0f || damageCooldown.Get() == 0.0f) {
+            
+            hp -= 10; // Agora o Zumbi pode tirar mais vida por batida (ex: 10 de dano)
+            
+            damageCooldown.Restart(); // Reinicia o cronômetro para proteger o jogador
+            damageCooldown.Update(0.001f); // Pequeno empurrãozinho para não ficar em zero
+            
+            // Opcional: Imprime no terminal para você ver a vida a descer
+            // std::cout << "Ouch! HP do Jogador: " << hp << std::endl;
+            /*if (hp <= 0) {
+                // Não deletamos o personagem aqui, deixamos o Update tocar a animação!
+                std::cout << "O Jogador Morreu!" << std::endl;
+            }*/
+        }
+    }
 }

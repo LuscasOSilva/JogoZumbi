@@ -89,7 +89,7 @@ void Zombie::Update(float dt) {
             associated.box.y += displacement.y;
 
             // Opcional: Atualiza o ângulo do zumbi para ele olhar na direção que caminha
-            associated.angleDeg = normalizedDir.GetAngle() * (180.0 / M_PI);
+            // associated.angleDeg = normalizedDir.GetAngle() * (180.0 / M_PI);
             
             // POLIMENTO EXTRA: Espelha o sprite do zumbi se ele andar para a esquerda
             SpriteRenderer* sr = (SpriteRenderer*)associated.GetComponent("SpriteRenderer");
