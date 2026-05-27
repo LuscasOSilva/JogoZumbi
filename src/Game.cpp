@@ -4,6 +4,7 @@
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
 #include "InputManager.h"
+#include "TitleState.h"
 #include <iostream>
 
 // Inicialização da instância estática como nula
@@ -77,7 +78,8 @@ Game::Game(std::string title, int width, int height) {
     
     // T7
     storedState = nullptr;
-    stateStack.emplace(new StageState());
+    // O estado inicial absoluto do jogo agora é o Menu de Título!
+    stateStack.emplace(new TitleState());
 } // Fim do construtor
 
 Game::~Game() { // Destrutor
