@@ -3,7 +3,7 @@
 #include "Animator.h"
 #include "Game.h"
 #include "Gun.h"
-#include "State.h"
+#include "StageState.h"
 #include "GameObject.h"
 #include "Collider.h"
 #include "Zombie.h"

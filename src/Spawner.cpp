@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "Zombie.h"
 #include "Game.h"
-#include "State.h"
+#include "StageState.h"
 #include <cstdlib> // Necessário para usar a função rand()
 
 Spawner::Spawner(GameObject& associated, float cooldownTime) 

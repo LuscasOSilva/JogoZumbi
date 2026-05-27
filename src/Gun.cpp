@@ -4,7 +4,7 @@
 #include "Bullet.h"
 #include "Game.h"
 #include "GameObject.h"
-#include "State.h"
+#include "StageState.h"
 #include <cmath>
 
 // Define o M_PI se não existir no sistema

@@ -1,33 +1,41 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "SDL2/SDL.h" // Importante para o g++ no WSL 
 #include <string>
-
-// Forward declaration da classe State que será criada depois
-class State;
+#include <stack>
+#include <memory>
+#include "SDL2/SDL.h"
+#include "State.h"
 
 class Game {
 public:
     ~Game();                               // Destrutor
+    static Game& GetInstance();            // T1/T2 Método de acesso Singleton
     void Run();                            // O Game Loop
-    SDL_Renderer* GetRenderer();           // Getter do renderizador
-    State& GetState();                     // Getter do estado atual
-    static Game& GetInstance();            // Método de acesso Singleton
-    void CalculateDeltaTime();
-    float GetDeltaTime();
 
+    // ALTERADO: Agora retorna uma referência para o Estado no topo da pilha
+    State& GetState();
+
+    // NOVO: Método para empilhar um novo estado
+    void Push(State* state);
+
+    SDL_Renderer* GetRenderer();           // Getter do renderizador
+    float GetDeltaTime();
+    void CalculateDeltaTime();
+    
 private:
     // Construtor privado: recebe título e dimensões [cite: 
     Game(std::string title, int width, int height);
-
     static Game* instance;                 // Instância única estática
+    
     SDL_Window* window;                    // Janela da SDL
     SDL_Renderer* renderer;                // Renderizador da SDL
-    State* state;                          // Estado atual do jogo
 
     float dt;
     int frameStart;
+
+    std::stack<std::unique_ptr<State>> stateStack;
+    State* storedState; // Guarda o estado que aguarda para ser empilhado
 };
 
 #endif

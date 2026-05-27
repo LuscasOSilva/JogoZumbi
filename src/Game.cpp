@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "State.h"
+#include "StageState.h"
 #include "Resources.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
@@ -70,19 +70,24 @@ Game::Game(std::string title, int width, int height) {
         std::cerr << "Erro ao criar renderizador: " << SDL_GetError() << std::endl;
         exit(1);
     }
-
-    // 6. Instancia o State
-    state = new State();
+    
     // Trabalho 4
     frameStart = SDL_GetTicks();
     dt = 0;
+    
+    // T7
+    storedState = nullptr;
+    stateStack.emplace(new StageState());
 } // Fim do construtor
 
 Game::~Game() { // Destrutor
     // Ordem inversa da inicializacao
-    // 1. Limpa o estado (quando ele existir)
-    if (state != nullptr) {
-        delete state; //  Libera o estado primeiro
+    if (storedState != nullptr) {
+        delete storedState;
+    }
+    // Esvazia a pilha de estados
+    while (!stateStack.empty()) {
+        stateStack.pop();
     }
 
     // 2. Fecha audio
@@ -113,26 +118,66 @@ SDL_Renderer* Game::GetRenderer() {
 }
 
 State& Game::GetState() {
-    return *state;
+    // Retorna uma referência segura para o estado que está no topo
+    return *stateStack.top().get();
 }
 
-
 void Game::Run() {
-    // Ativa o Start do estado inicial antes de começar o loop
-    state->Start(); 
+    // 1. Dá o Start no estado inicial que está no topo
+    if (!stateStack.empty()) {
+        stateStack.top()->Start();
+    }
 
-    while (!state->QuitRequested() && !InputManager::GetInstance().QuitRequested()) {
+    // Loop Principal da Engine
+    while (!stateStack.empty() && !stateStack.top()->QuitRequested()) {
+        
+        // --- GERENCIAMENTO DA PILHA DE ESTADOS ---
+        // A) Se o estado atual pediu para sair (Pop)
+        if (stateStack.top()->PopRequested()) {
+            stateStack.pop(); // Remove do topo (chama o destrutor dele automaticamente)
+            
+            if (!stateStack.empty()) {
+                stateStack.top()->Resume(); // Acorda o estado de baixo
+            }
+        }
+        
+        // B) Se existe um novo estado aguardando para ser inserido (Push)
+        if (storedState != nullptr) {
+            if (!stateStack.empty()) {
+                stateStack.top()->Pause(); // Adormece o estado atual
+            }
+            stateStack.emplace(storedState); // Coloca o novo no topo
+            stateStack.top()->Start();       // Inicializa-o
+            storedState = nullptr;           // Limpa o salvamento temporário
+        }
+
+        // C) Se após o Pop a pilha esvaziar, encerramos o jogo imediatamente
+        if (stateStack.empty()) {
+            break;
+        }
+
+        // --- SISTEMA DE TIMING & INPUT ---
         CalculateDeltaTime();
         InputManager::GetInstance().Update();
 
-        state->Update(dt);
-        state->Render();
-
+        // --- UPDATE & RENDER DO ESTADO DO TOPO ---
+        stateStack.top()->Update(dt);
+        
+        // Limpa a tela antes de desenhar o frame atual
+        SDL_RenderClear(renderer);
+        
+        stateStack.top()->Render();
+        
+        // Apresenta o frame renderizado
         SDL_RenderPresent(renderer);
-    }
 
-    // Limpeza de recursos (Trabalho 3)
-    Resources::ClearImages();
-    Resources::ClearMusics();
-    Resources::ClearSounds();
+        // Controla a taxa de quadros (60 FPS)
+        SDL_Delay(33); 
+    }
+}
+
+void Game::Push(State* state) {
+    // Não empilhamos imediatamente para não quebrar o loop atual.
+    // Guardamos na retaguarda para o próximo frame.
+    storedState = state;
 }

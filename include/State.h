@@ -1,35 +1,38 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include <vector>
-#include <memory> // Obrigatório para shared_ptr e weak_ptr
 #include "GameObject.h"
-#include "Music.h"
+#include <memory>
+#include <vector>
 
 class State {
 public:
     State();
-    ~State();
+    virtual ~State();
 
-    void Start(); // Nova etapa do ciclo de vida
+    virtual void LoadAssets() = 0;
+    virtual void Update(float dt) = 0;
+    virtual void Render() = 0;
 
-    // Agora retornam e gerenciam ponteiros inteligentes
-    std::weak_ptr<GameObject> AddObject(GameObject* go);
-    std::weak_ptr<GameObject> GetObjectPtr(GameObject* go);
+    virtual void Start() = 0;
+    virtual void Pause() = 0;
+    virtual void Resume() = 0;
 
-    void Update(float dt);
-    void Render();
+    virtual std::weak_ptr<GameObject> AddObject(GameObject* go);
+    virtual std::weak_ptr<GameObject> GetObjectPtr(GameObject* go);
 
     bool QuitRequested();
+    bool PopRequested();
 
-private:
-    void LoadAssets();
+protected:
+    void StartArray();
+    virtual void UpdateArray(float dt);
+    virtual void RenderArray();
 
-    Music music;
+    bool popRequested;
     bool quitRequested;
-    bool started; // Indica se o Start() já foi executado
+    bool started;
 
-    // O vetor agora protege os objetos contra deleção acidental
     std::vector<std::shared_ptr<GameObject>> objectArray;
 };
 
