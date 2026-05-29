@@ -80,6 +80,10 @@ Game::Game(std::string title, int width, int height) {
     storedState = nullptr;
     // O estado inicial absoluto do jogo agora é o Menu de Título!
     stateStack.emplace(new TitleState());
+
+    /* //para começarmos já no jogo, apagar a parte de cima
+    storedState = nullptr;
+    stateStack.emplace(new StageState());*/
 } // Fim do construtor
 
 Game::~Game() { // Destrutor

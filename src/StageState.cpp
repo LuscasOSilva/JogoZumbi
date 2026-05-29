@@ -12,6 +12,8 @@
 #include "Collision.h"
 #include "Collider.h"
 #include "Spawner.h"
+#include "EndState.h"
+#include "Game.h"
 #include "SDL2/SDL.h"
 
 #ifndef ESCAPE_KEY
@@ -120,6 +122,16 @@ void StageState::Update(float dt) {
         if (objectArray[i]->IsDead()) {
             objectArray.erase(objectArray.begin() + i);
         }
+    }
+
+    // --- VERIFICAÇÃO DE FIM DE JOGO ---
+    // Se o ponteiro do jogador for nulo, significa que ele foi destruído (morreu!)
+    if (Character::player == nullptr) {
+        
+        this->popRequested = true; // Pede para fechar a fase atual
+        
+        // Empilha a tela de Game Over (passando false, pois perdeu)
+        Game::GetInstance().Push(new EndState(false)); 
     }
 }
 
