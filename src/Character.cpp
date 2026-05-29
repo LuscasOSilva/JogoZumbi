@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "Collider.h"
 #include "Zombie.h"
+#include "Camera.h"
 
 // Inicialização do ponteiro estático global
 Character* Character::player = nullptr;
@@ -30,7 +31,8 @@ Character::Character(GameObject& associated, std::string sprite) : Component(ass
     // Adiciona as animações passando o (frameInicial, frameFinal, tempoPorFrame)
     anim->AddAnimation("idle", Animation(0, 0, 1.0f));
     anim->AddAnimation("walking", Animation(0, 5, 0.1f));
-    anim->AddAnimation("dead", Animation(10, 11, 0.2f));
+    // Congela a animação exclusivamente no último frame (o túmulo)
+    anim->AddAnimation("dead", Animation(11, 11, 1.0f));
     
     // Força a engine a recortar e mostrar o primeiro frame imediatamente!
     anim->SetAnimation("idle"); 
@@ -45,6 +47,9 @@ Character::~Character() {
     // Se o player global for este objeto que está a ser destruído, limpa o ponteiro
     if (player == this) {
         player = nullptr;
+
+        // CORREÇÃO: Avisa a câmera para parar de seguir o corpo que acabou de ser apagado!
+        Camera::Unfollow(); 
     }
 }
 
@@ -75,8 +80,8 @@ void Character::Update(float dt) {
         Animator* anim = (Animator*)associated.GetComponent("Animator");
         if (anim) anim->SetAnimation("dead");
         
-        // deathTimer.Update(dt);
-        // if (deathTimer.Get() > 1.0f) associated.RequestDelete();
+        deathTimer.Update(dt);
+        if (deathTimer.Get() > 1.0f) associated.RequestDelete();
         
         return; // Não faz mais nada se estiver morto
     }
