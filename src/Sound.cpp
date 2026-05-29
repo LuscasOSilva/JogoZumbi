@@ -33,8 +33,9 @@ void Sound::Stop() {
 
 Sound::~Sound() {
     if (chunk != nullptr) {
-        Mix_HaltChannel(channel); // Garante que pare antes de liberar
-        Mix_FreeChunk(chunk);     // Desaloca a memória
+        Stop();
+        /*Mix_HaltChannel(channel); // Garante que pare antes de liberar
+        Mix_FreeChunk(chunk);     // Desaloca a memória*/
     }
 }
 

@@ -11,6 +11,13 @@ Music::Music(std::string file) {
     Open(file);
 }
 
+Music::~Music() {
+    Stop(); // Para imediatamente antes de liberar
+    /*if (music != nullptr) {
+        Mix_FreeMusic(music); // Desaloca da memória
+    }*/
+}
+
 void Music::Open(std::string file) {
     // Carrega o arquivo de música
     music = Resources::GetMusic(file);
@@ -33,11 +40,4 @@ void Music::Stop(int msToStop) {
 
 bool Music::IsOpen() {
     return music != nullptr;
-}
-
-Music::~Music() {
-    Stop(0); // Para imediatamente antes de liberar
-    if (music != nullptr) {
-        Mix_FreeMusic(music); // Desaloca da memória
-    }
 }

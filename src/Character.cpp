@@ -71,14 +71,13 @@ void Character::Update(float dt) {
     // Verifica se o personagem já morreu
     if (hp <= 0) {
         // Limpa a fila de tarefas acumuladas para não corromper a heap
-        std::queue<Command> emptyQueue;
-        std::swap(taskQueue, emptyQueue);
-        
+        while (!taskQueue.empty()) {
+            taskQueue.pop();
+        }
+
         // Se morreu, destroi a arma instantaneamente
         std::shared_ptr<GameObject> gunGo = gun.lock();
-        if (gunGo) {
-            gunGo->RequestDelete();
-        }
+        if (gunGo) gunGo->RequestDelete();
 
         // Toca a animação do túmulo
         Animator* anim = (Animator*)associated.GetComponent("Animator");

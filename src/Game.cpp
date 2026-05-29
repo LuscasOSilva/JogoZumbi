@@ -3,6 +3,7 @@
 #include "Resources.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
+#include "SDL2/SDL_ttf.h" // LIDAR COM TEXTO
 #include "InputManager.h"
 #include "TitleState.h"
 #include <iostream>
@@ -40,6 +41,12 @@ Game::Game(std::string title, int width, int height) {
     if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
         std::cerr << "Erro IMG_Init: " << SDL_GetError() << std::endl;
         exit(1);
+    }
+
+    // Inicializa a biblioteca de fontes (TTF) T7
+    if (TTF_Init() != 0) {
+        SDL_Log("Erro ao inicializar SDL_ttf: %s", TTF_GetError());
+        exit(EXIT_FAILURE);
     }
 
     // 3. Inicializa SDL_mixer
@@ -99,6 +106,10 @@ Game::~Game() { // Destrutor
     // 2. Fecha audio
     Mix_CloseAudio();
     Mix_Quit();
+
+    // Fecha texto
+    TTF_Quit();
+
     // 3. Fecha imagens
     IMG_Quit();
     // 4. Destroi renderizador e janela

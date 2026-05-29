@@ -5,6 +5,7 @@
 #include "InputManager.h"
 #include "Game.h"
 #include "Camera.h"
+#include "Text.h"
 
 TitleState::TitleState() : State() {
     // 1. Criar o objeto de Background da tela de título
@@ -15,6 +16,25 @@ TitleState::TitleState() : State() {
     
     // Adiciona o background ao vetor de objetos deste estado
     AddObject(bgObj);
+
+    // --- TEXTO: Pressione Espaço ---
+    GameObject* textObj = new GameObject();
+    
+    // Cor do texto (Branco opaco)
+    SDL_Color textColor = {255, 255, 255, 255}; 
+    
+    // Instancia o componente Text (BLENDED é o estilo com melhor qualidade)
+    Text* titleText = new Text(*textObj, "font/neodgm.ttf", 36, Text::BLENDED, "Pressione ESPACO para Jogar", textColor);
+    textObj->AddComponent(titleText);
+    
+    // Centraliza o texto horizontalmente
+    // A classe Text atualiza a box com a largura da string automaticamente!
+    textObj->box.x = 600 - (textObj->box.w / 2);
+    
+    // Coloca o texto na parte inferior do ecrã
+    textObj->box.y = 500; 
+    
+    AddObject(textObj);
 }
 
 TitleState::~TitleState() {

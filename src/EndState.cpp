@@ -4,6 +4,7 @@
 #include "InputManager.h"
 #include "Game.h"
 #include "Camera.h"
+#include "Text.h"
 
 EndState::EndState(bool win) : State() {
     // Guarda a variável para usarmos depois
@@ -24,6 +25,22 @@ EndState::EndState(bool win) : State() {
     bgObj->box.x = 0;
     bgObj->box.y = 0;
     AddObject(bgObj);
+
+    // --- TEXTO: Voltar ao Menu ---
+    GameObject* textObj = new GameObject();
+    
+    SDL_Color textColor = win ? SDL_Color{0, 255, 0, 255} : SDL_Color{255, 0, 0, 255};
+    
+    std::string message = win ? "Pressione ESPACO para jogar novamente!" : "Voce morreu... ESPACO para voltar";
+    
+    Text* endText = new Text(*textObj, "font/neodgm.ttf", 32, Text::BLENDED, message, textColor);
+    textObj->AddComponent(endText);
+    
+    // Centraliza o texto no ecrã
+    textObj->box.x = 600 - (textObj->box.w / 2);
+    textObj->box.y = 520;
+    
+    AddObject(textObj);
 }
 
 EndState::~EndState() {
