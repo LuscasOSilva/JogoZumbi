@@ -6,6 +6,9 @@
 #include "Camera.h"
 
 EndState::EndState(bool win) : State() {
+    // Guarda a variável para usarmos depois
+    this->win = win;
+
     // 1. Cria o objeto para o fundo da tela
     GameObject* bgObj = new GameObject();
 
@@ -55,6 +58,12 @@ void EndState::Render() {
 void EndState::Start() {
     LoadAssets();
     StartArray();
+
+    if (win) {
+        backgroundMusic.Open("audio/endStateWin.ogg");
+    } else {
+        backgroundMusic.Open("audio/endStateLose.ogg");
+    }
     backgroundMusic.Play();
 }
 

@@ -127,11 +127,8 @@ void StageState::Update(float dt) {
     // --- VERIFICAÇÃO DE FIM DE JOGO ---
     // Se o ponteiro do jogador for nulo, significa que ele foi destruído (morreu!)
     if (Character::player == nullptr) {
-        
-        this->popRequested = true; // Pede para fechar a fase atual
-        
-        // Empilha a tela de Game Over (passando false, pois perdeu)
-        Game::GetInstance().Push(new EndState(false)); 
+        this->popRequested = true; // Pede pop da fase de forma segura
+        Game::GetInstance().Push(new EndState(false)); // Empilha a tela de Game Over
     }
 }
 
