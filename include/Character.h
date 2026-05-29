@@ -5,10 +5,12 @@
 #include "Vec2.h"
 #include "Rect.h"
 #include "GameObject.h"
+#include "Timer.h" 
+#include "Sound.h"
 #include <string>
 #include <queue>
 #include <memory>
-#include "Timer.h" 
+
 
 class Character : public Component {
 public:
@@ -48,6 +50,7 @@ private:
     
     Timer deathTimer;
     Timer damageCooldown;
+    Sound* damageSound;
 };
 
 #endif

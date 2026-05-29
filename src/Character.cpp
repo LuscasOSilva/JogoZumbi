@@ -41,6 +41,9 @@ Character::Character(GameObject& associated, std::string sprite) : Component(ass
     
     // Adiciona a caixa de colisão ao jogador
     associated.AddComponent(new Collider(associated));
+
+    damageSound = new Sound(associated, "audio/Hit1.wav");
+    associated.AddComponent(damageSound);
 }
 
 Character::~Character() {
@@ -160,6 +163,10 @@ void Character::NotifyCollision(GameObject& other) {
             damageCooldown.Restart(); // Reinicia o cronômetro para proteger o jogador
             damageCooldown.Update(0.001f); // Pequeno empurrãozinho para não ficar em zero
             
+            if (damageSound != nullptr) {
+                damageSound->Play(1);
+            }
+
             // Opcional: Imprime no terminal para você ver a vida a descer
             // std::cout << "Ouch! HP do Jogador: " << hp << std::endl;
             /*if (hp <= 0) {

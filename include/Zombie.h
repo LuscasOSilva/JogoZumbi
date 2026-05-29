@@ -2,6 +2,7 @@
 #define ZOMBIE_H
 
 #include "Component.h"
+#include "Sound.h"
 
 class Zombie : public Component {
 public:
@@ -19,6 +20,7 @@ public:
 private:
     int hitpoints;
     float linearSpeed;
+    Sound* hitSound;
 };
 
 #endif

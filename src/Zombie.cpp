@@ -26,6 +26,9 @@ Zombie::Zombie(GameObject& associated) : Component(associated) {
 
     anim->SetAnimation("walking"); // Começa andando1
 
+    hitSound = new Sound(associated, "audio/Hit0.wav");
+    associated.AddComponent(hitSound);
+
     associated.AddComponent(new Sound(associated, "audio/Dead.wav"));
 
     // Adiciona a caixa de colisão ao inimigo
@@ -53,6 +56,11 @@ void Zombie::Damage(int damage) {
         Collider* collider = (Collider*)associated.GetComponent("Collider");
         if (collider != nullptr) {
             associated.RemoveComponent(collider);
+        }
+    } else {
+        // Se levou tiro e não morreu, toca o grito de dor!
+        if (hitSound != nullptr) {
+            hitSound->Play(1);
         }
     }
 }

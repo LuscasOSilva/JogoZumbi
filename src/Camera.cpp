@@ -14,8 +14,8 @@ void Camera::Update(float dt) {
     if (focus != nullptr) {
         // Centraliza a câmera no objeto (ajustando para o meio da tela)
         // Considerando tela de 1024x600 (ajuste se a sua for diferente)
-        Camera::pos.x = focus->box.GetCenter().x - 512;
-        Camera::pos.y = focus->box.GetCenter().y - 300;
+        Camera::pos.x = focus->box.GetCenter().x - 600;
+        Camera::pos.y = focus->box.GetCenter().y - 450;
     } else {
         // Movimento manual via teclado (Setas ou WASD)
         InputManager& input = InputManager::GetInstance();
